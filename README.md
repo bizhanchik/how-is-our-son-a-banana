@@ -13,11 +13,9 @@ It's a playable parody of the viral **AI Fruit Drama / Fruit Love Island** TikTo
 
 - **Click** anywhere to advance dialogue (click again to skip the typewriter).
 - At decision points, **pick a choice**. Each one quietly moves a hidden **suspicion** meter.
-- Reach the delivery room and find out which of **two endings** you earned:
   - 🍓 **The Perfect Crime** — the baby is a strawberry. She got away with it.
   - 🍌 **Exposed** — the baby is a banana. Strawberto leaves. The internet is merciless.
 
-The suspicion score is hidden during play and only revealed in the ending recap — that's the joke.
 
 ## ▸ Tech
 
@@ -25,7 +23,6 @@ The suspicion score is hidden during play and only revealed in the ending recap 
 - **Tailwind CSS v4** — hand-built telenovela design system (Playfair Display + DM Sans)
 - **Framer Motion** — scene crossfades, sprite entrances, the banana-reveal screen shake
 - **Web Audio API** — fully procedural SFX (typewriter ticks, choice stings, the reveal swell); no audio files
-- State is a small `useReducer` state machine (`lib/reducer.ts`); all content is data-driven (`lib/scenes.ts`)
 - Deployed on **Vercel**
 
 ```bash
@@ -48,3 +45,13 @@ pnpm dev      # http://localhost:3000
 - **Joy Ofodu's _How Different Fruits Act_ (2025)** — a parody influence on fruit personification.
 
 This is an affectionate, original parody. All characters and dialogue are fictional.
+- On the title screen, tap **How to Play** for a quick rules overlay.
+- One scene features a **timed mini-game**: delete Bananito's incriminating texts before the
+  timer runs out. The more you delete, the lower your suspicion.
+- Reach the delivery room and find out which of **three endings** you earned:
+  - 🍓 **Close Call** (Ending C) — the baby is red, but Strawberto is counting every late night.
+The suspicion score is hidden during play and only revealed in the ending recap — that's the joke.
+Discovered endings are tracked in `localStorage` and shown on the title screen and recap.
+- State is a small `useReducer` state machine (`lib/reducer.ts`); all content is data-driven (`lib/scenes.ts`)
+- **`lib/progress.ts`** — lightweight `localStorage` tracker for discovered endings
+- **Vercel Analytics** — anonymous play-time analytics via `@vercel/analytics`
