@@ -6,8 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { Scene, Choice } from "@/lib/types";
 import DialogueBox, { type DialogueHandle } from "./DialogueBox";
 import ChoiceMenu from "./ChoiceMenu";
-import Voiceover from "./Voiceover";
 import TransitionCard from "./TransitionCard";
+import { sceneLines } from "@/lib/lines";
 import { dramaSwell } from "@/lib/sfx";
 import { playClip, clipPath, stopVoice } from "@/lib/audio";
 
@@ -29,8 +29,9 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
   const [showCard, setShowCard] = useState(false);
   const boxRef = useRef<DialogueHandle>(null);
 
-  const line = scene.dialogue[lineIndex];
-  const isLastLine = lineIndex >= scene.dialogue.length - 1;
+  const lines = useMemo(() => sceneLines(scene), [scene]);
+  const line = lines[lineIndex];
+  const isLastLine = lineIndex >= lines.length - 1;
   const hasChoices = !!scene.choices?.length;
   const showChoices = isLastLine && hasChoices && lineComplete && !showCard;
   const showAdvance = lineComplete && !showChoices && !showCard;
@@ -52,39 +53,18 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
   }, [isReveal, scene.id, showCard]);
 
   // ── voice playback ──────────────────────────────
-  const lineRef = useRef(lineIndex);
-  useEffect(() => {
-    lineRef.current = lineIndex;
-  }, [lineIndex]);
-
   // narrate the chapter card while it is shown
   useEffect(() => {
     if (showCard && scene.card) playClip(clipPath.card(scene.id));
   }, [showCard, scene.id, scene.card]);
 
-  // on scene start (after any card): voiceover, then the first line
+  // voice the current line (also fires when a card is dismissed → plays line 0)
   useEffect(() => {
     if (showCard) return;
-    let cancelled = false;
-    (async () => {
-      if (scene.voiceover) {
-        await playClip(clipPath.vo(scene.id));
-        if (cancelled) return;
-      }
-      if (lineRef.current === 0) playClip(clipPath.line(scene.id, 0));
-    })();
-    return () => {
-      cancelled = true;
-    };
+    const a = lines[lineIndex]?.audio;
+    if (a) playClip(a);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scene.id, showCard]);
-
-  // voice each subsequent line as it appears
-  useEffect(() => {
-    if (showCard) return;
-    if (lineIndex > 0) playClip(clipPath.line(scene.id, lineIndex));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lineIndex]);
+  }, [scene.id, lineIndex, showCard]);
 
   // stop audio when the scene view unmounts (replay / back to title)
   useEffect(() => () => stopVoice(), []);
@@ -168,8 +148,6 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
         onClick={handleStageClick}
         className="absolute inset-0 z-20 h-full w-full cursor-pointer"
       />
-
-      {!showCard && scene.voiceover && <Voiceover text={scene.voiceover} />}
 
       {/* bottom stack: choices sit ABOVE the dialogue box (no overlap) */}
       {!showCard && (

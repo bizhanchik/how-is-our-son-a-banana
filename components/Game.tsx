@@ -4,6 +4,7 @@ import { useCallback, useReducer, useState } from "react";
 import type { Choice } from "@/lib/types";
 import { reducer, initialState } from "@/lib/reducer";
 import { scenes } from "@/lib/scenes";
+import { sceneLineCount } from "@/lib/lines";
 import { setVoiceMuted, stopVoice } from "@/lib/audio";
 import { setMuted as setSfxMuted } from "@/lib/sfx";
 import TitleScreen from "./TitleScreen";
@@ -21,7 +22,7 @@ export default function Game() {
     const s = scenes[state.sceneId];
     if (!s) return;
     // finished walking through an ending scene → show the recap overlay
-    if (s.isEnding && state.lineIndex >= s.dialogue.length - 1) {
+    if (s.isEnding && state.lineIndex >= sceneLineCount(s) - 1) {
       stopVoice();
       setRecap(true);
       return;

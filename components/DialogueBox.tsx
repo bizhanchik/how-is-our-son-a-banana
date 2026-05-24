@@ -81,7 +81,7 @@ const DialogueBox = forwardRef<DialogueHandle, Props>(function DialogueBox(
         <span
           className={`label-track inline-block rounded-md px-3 py-1 text-[11px] font-bold sm:text-xs ${SPEAKER_COLOR[speaker]}`}
         >
-          {isNarrator ? "✦" : speaker}
+          {isNarrator ? "✦ Narrator" : speaker}
         </span>
         <div className="mt-2 rounded-2xl border border-gold/20 bg-black/70 p-5 shadow-2xl backdrop-blur-md sm:p-7">
           <p

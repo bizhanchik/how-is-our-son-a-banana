@@ -1,5 +1,6 @@
 import type { GameAction, GameState } from "./types";
 import { scenes, FIRST_SCENE } from "./scenes";
+import { sceneLineCount } from "./lines";
 
 export const initialState: GameState = {
   phase: "title",
@@ -51,8 +52,8 @@ export function reducer(state: GameState, action: GameAction): GameState {
       const scene = scenes[state.sceneId];
       if (!scene) return state;
 
-      // still more dialogue lines to reveal
-      if (state.lineIndex < scene.dialogue.length - 1) {
+      // still more lines to reveal (narrator voiceover counts as line 0)
+      if (state.lineIndex < sceneLineCount(scene) - 1) {
         return { ...state, lineIndex: state.lineIndex + 1 };
       }
 
