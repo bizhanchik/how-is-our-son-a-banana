@@ -26,6 +26,7 @@ The suspicion score is hidden during play and only revealed in the ending recap 
 - **Framer Motion** — scene crossfades, sprite entrances, the banana-reveal screen shake
 - **Web Audio API** — fully procedural SFX (typewriter ticks, choice stings, the reveal swell); no audio files
 - State is a small `useReducer` state machine (`lib/reducer.ts`); all content is data-driven (`lib/scenes.ts`)
+- Scene narration (voiceover) is now the **first clickable line** in the dialogue box (`lib/lines.ts`) — narrator label shows as **✦ Narrator**; no separate overlay
 - Deployed on **Vercel**
 
 ```bash
