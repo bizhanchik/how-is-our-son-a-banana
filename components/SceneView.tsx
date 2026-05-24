@@ -30,6 +30,18 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
   const [showCard, setShowCard] = useState(false);
   const boxRef = useRef<DialogueHandle>(null);
 
+  // On phones the 16:9 video crops badly, so fall back to the old static
+  // background + sprites layout (which positions characters responsively).
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  const useVideo = !!scene.video && !isMobile;
+
   const lines = useMemo(() => sceneLines(scene), [scene]);
   const line = lines[lineIndex];
   const isLastLine = lineIndex >= lines.length - 1;
@@ -109,14 +121,14 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
       {/* background crossfade (video if the scene has one, else still image) */}
       <AnimatePresence mode="sync">
         <motion.div
-          key={scene.video || scene.background}
+          key={useVideo ? scene.video : scene.background}
           initial={{ opacity: 0, scale: 1.06 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
           className="absolute inset-0"
         >
-          {scene.video ? (
+          {useVideo ? (
             <video
               src={scene.video}
               poster={scene.background}
@@ -136,7 +148,7 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
 
       {/* sprites (revealed after the card; skipped when a video already shows the cast) */}
       <AnimatePresence>
-        {!showCard && !scene.video &&
+        {!showCard && !useVideo &&
           scene.sprites?.map((s) => (
             <motion.div
               key={`${scene.id}-${s.src}`}
