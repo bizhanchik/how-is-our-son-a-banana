@@ -29,6 +29,8 @@ export interface SpriteSlot {
 export interface Scene {
   id: string;
   background: string; // /bg/...
+  /** chapter / transition card shown on scene entry */
+  card?: { time?: string; place?: string; bg?: string };
   /** characters on screen for this scene (rendered behind the dialogue box) */
   sprites?: SpriteSlot[];
   /** italic true-crime narrator line shown top-center before/with dialogue */

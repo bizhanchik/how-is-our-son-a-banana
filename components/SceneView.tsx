@@ -7,6 +7,7 @@ import type { Scene, Choice } from "@/lib/types";
 import DialogueBox, { type DialogueHandle } from "./DialogueBox";
 import ChoiceMenu from "./ChoiceMenu";
 import Voiceover from "./Voiceover";
+import TransitionCard from "./TransitionCard";
 import { dramaSwell } from "@/lib/sfx";
 
 const POS: Record<string, string> = {
@@ -24,24 +25,30 @@ interface Props {
 
 export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Props) {
   const [lineComplete, setLineComplete] = useState(false);
+  const [showCard, setShowCard] = useState(false);
   const boxRef = useRef<DialogueHandle>(null);
 
   const line = scene.dialogue[lineIndex];
   const isLastLine = lineIndex >= scene.dialogue.length - 1;
   const hasChoices = !!scene.choices?.length;
-  const showChoices = isLastLine && hasChoices && lineComplete;
-  const showAdvance = lineComplete && !showChoices;
+  const showChoices = isLastLine && hasChoices && lineComplete && !showCard;
+  const showAdvance = lineComplete && !showChoices && !showCard;
+
+  // show the chapter card on scene entry
+  useEffect(() => {
+    setShowCard(!!scene.card);
+  }, [scene.id, scene.card]);
 
   // reset completion state per line
   useEffect(() => {
     setLineComplete(false);
   }, [lineIndex, scene.id]);
 
-  // dramatic swell when entering a reveal scene
+  // dramatic swell when entering a reveal scene (after any card)
   const isReveal = scene.cinematic === "reveal";
   useEffect(() => {
-    if (isReveal) dramaSwell();
-  }, [isReveal, scene.id]);
+    if (isReveal && !showCard) dramaSwell();
+  }, [isReveal, scene.id, showCard]);
 
   const handleStageClick = useCallback(() => {
     if (showChoices) return;
@@ -55,6 +62,7 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
   }, [showChoices, onAdvance]);
 
   const onComplete = useCallback(() => setLineComplete(true), []);
+  const dismissCard = useCallback(() => setShowCard(false), []);
 
   // shake on the iconic banana reveal line
   const shaking = useMemo(
@@ -78,72 +86,85 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
           transition={{ duration: 0.6 }}
           className="absolute inset-0"
         >
-          <Image
-            src={scene.background}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
+          <Image src={scene.background} alt="" fill priority sizes="100vw" className="object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
         </motion.div>
       </AnimatePresence>
 
-      {/* sprites */}
+      {/* sprites (revealed after the card) */}
       <AnimatePresence>
-        {scene.sprites?.map((s) => (
-          <motion.div
-            key={`${scene.id}-${s.src}`}
-            initial={{ opacity: 0, x: s.position === "left" ? -60 : s.position === "right" ? 60 : 0, y: 20 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className={`absolute bottom-0 z-10 h-[72%] w-[55%] sm:h-[85%] sm:w-[40%] ${POS[s.position ?? "center"]}`}
-          >
-            <Image
-              src={s.src}
-              alt={s.name}
-              fill
-              priority
-              sizes="(max-width: 640px) 55vw, 40vw"
-              className="object-contain object-bottom drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)]"
-            />
-          </motion.div>
-        ))}
+        {!showCard &&
+          scene.sprites?.map((s) => (
+            <motion.div
+              key={`${scene.id}-${s.src}`}
+              initial={{ opacity: 0, x: s.position === "left" ? -60 : s.position === "right" ? 60 : 0, y: 20 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className={`absolute bottom-0 z-10 h-[68%] w-[55%] sm:h-[82%] sm:w-[40%] ${POS[s.position ?? "center"]}`}
+            >
+              <Image
+                src={s.src}
+                alt={s.name}
+                fill
+                priority
+                sizes="(max-width: 640px) 55vw, 40vw"
+                className="object-contain object-bottom drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)]"
+              />
+            </motion.div>
+          ))}
       </AnimatePresence>
 
       {/* letterbox */}
-      {scene.letterbox && (
+      {scene.letterbox && !showCard && (
         <>
           <div className="letterbox-bar top" />
           <div className="letterbox-bar bottom" />
         </>
       )}
 
-      {/* click catcher (below choices, dialogue is pointer-events-none) */}
+      {/* click catcher (below dialogue/choices) */}
       <button
         aria-label="Advance"
         onClick={handleStageClick}
         className="absolute inset-0 z-20 h-full w-full cursor-pointer"
       />
 
-      {scene.voiceover && <Voiceover text={scene.voiceover} />}
+      {!showCard && scene.voiceover && <Voiceover text={scene.voiceover} />}
 
-      {line && (
-        <DialogueBox
-          ref={boxRef}
-          key={`${scene.id}-${lineIndex}`}
-          speaker={line.speaker}
-          text={line.text}
-          onComplete={onComplete}
-          showAdvance={showAdvance}
-        />
+      {/* bottom stack: choices sit ABOVE the dialogue box (no overlap) */}
+      {!showCard && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex flex-col items-center gap-2 px-4 pb-5 sm:gap-3 sm:px-10 sm:pb-8">
+          {showChoices && scene.choices && (
+            <div className="pointer-events-auto w-full">
+              <ChoiceMenu choices={scene.choices} onChoose={onChoose} />
+            </div>
+          )}
+          {line && (
+            <DialogueBox
+              ref={boxRef}
+              key={`${scene.id}-${lineIndex}`}
+              speaker={line.speaker}
+              text={line.text}
+              onComplete={onComplete}
+              showAdvance={showAdvance}
+            />
+          )}
+        </div>
       )}
 
-      {showChoices && scene.choices && (
-        <ChoiceMenu choices={scene.choices} onChoose={onChoose} />
-      )}
+      {/* chapter / transition card */}
+      <AnimatePresence>
+        {showCard && scene.card && (
+          <TransitionCard
+            key={`card-${scene.id}`}
+            time={scene.card.time}
+            place={scene.card.place}
+            bg={scene.card.bg}
+            onDismiss={dismissCard}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

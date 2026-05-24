@@ -75,7 +75,7 @@ const DialogueBox = forwardRef<DialogueHandle, Props>(function DialogueBox(
       initial={{ y: 24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-4 pb-6 sm:px-10 sm:pb-10"
+      className="pointer-events-none w-full"
     >
       <div className="mx-auto max-w-3xl">
         <span

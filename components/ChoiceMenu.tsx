@@ -22,10 +22,10 @@ export default function ChoiceMenu({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delayChildren: 0.05, staggerChildren: 0.08 }}
-      className="absolute inset-x-0 bottom-0 z-40 flex flex-col items-center gap-3 px-4 pb-8 sm:pb-12"
+      className="flex w-full flex-col items-center gap-2 sm:gap-3"
       onMouseEnter={() => sting()}
     >
-      <div className="flex w-full max-w-xl flex-col gap-3">
+      <div className="flex w-full max-w-xl flex-col gap-2 sm:gap-3">
         {choices.map((c, i) => (
           <motion.button
             key={i}
@@ -38,7 +38,7 @@ export default function ChoiceMenu({
               click();
               onChoose(c);
             }}
-            className={`w-full rounded-xl border-2 bg-black/75 px-5 py-4 text-left text-base font-medium text-cream shadow-xl backdrop-blur-md transition-colors sm:text-lg ${TONE[c.tone]}`}
+            className={`w-full rounded-xl border-2 bg-black/80 px-5 py-3 text-left text-sm font-medium text-cream shadow-xl backdrop-blur-md transition-colors sm:py-4 sm:text-lg ${TONE[c.tone]}`}
           >
             {c.text}
           </motion.button>

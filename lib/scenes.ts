@@ -20,6 +20,7 @@ export const scenes: Record<string, Scene> = {
   morning: {
     id: "morning",
     background: "/bg/kitchen-morning.png",
+    card: { time: "Tuesday Morning", place: "The Berry Residence", bg: "/bg/house-exterior.png" },
     sprites: [
       { src: SPR.bertoNeutral, name: "Strawberto", position: "left" },
       { src: SPR.rinaNeutral, name: "Strawberrina", position: "right" },
@@ -42,6 +43,7 @@ export const scenes: Record<string, Scene> = {
   "office-day": {
     id: "office-day",
     background: "/bg/office-day.png",
+    card: { time: "9:00 AM", place: "Bananito Corp — 40th Floor", bg: "/bg/tower-exterior.png" },
     sprites: [{ src: SPR.banaSmug, name: "Bananito", position: "center" }],
     voiceover: "Forty floors up, the air tasted different. It tasted like a mistake she hadn't made yet.",
     dialogue: [
@@ -60,6 +62,7 @@ export const scenes: Record<string, Scene> = {
   "office-night-safe": {
     id: "office-night-safe",
     background: "/bg/office-night.png",
+    card: { time: "That Night" },
     sprites: [{ src: SPR.banaSmug, name: "Bananito", position: "center" }],
     voiceover: "She said no. She meant no. And then she said yes to one drink.",
     dialogue: [
@@ -74,6 +77,7 @@ export const scenes: Record<string, Scene> = {
   "office-night-affair": {
     id: "office-night-affair",
     background: "/bg/office-night.png",
+    card: { time: "That Night" },
     cinematic: "montage",
     letterbox: true,
     voiceover: "The blinds came down. So did her better judgment.",
@@ -97,15 +101,35 @@ export const scenes: Record<string, Scene> = {
       { speaker: "Bananito", text: "Less than nothing. Now delete my number. Or don't. I like a woman who keeps souvenirs." },
     ],
     choices: [
-      { text: "📱 Delete every message", tone: "safe", suspicionDelta: -2, next: "pregnancy-test" },
-      { text: "💾 Keep them — \"it doesn't mean anything\"", tone: "risky", suspicionDelta: 2, flag: "evidence_kept", next: "pregnancy-test" },
+      { text: "📱 Delete every message", tone: "safe", suspicionDelta: -2, next: "home-aftermath" },
+      { text: "💾 Keep them — \"it doesn't mean anything\"", tone: "risky", suspicionDelta: 2, flag: "evidence_kept", next: "home-aftermath" },
     ],
+  },
+
+  // ─────────────────────────────────────────────── Scene 4.5 (bridge)
+  "home-aftermath": {
+    id: "home-aftermath",
+    background: "/bg/kitchen-morning.png",
+    card: { time: "Six Weeks Later", place: "Home", bg: "/bg/house-exterior.png" },
+    sprites: [
+      { src: SPR.bertoNeutral, name: "Strawberto", position: "left" },
+      { src: SPR.rinaNeutral, name: "Strawberrina", position: "right" },
+    ],
+    voiceover: "Six weeks passed. Strawberrina played the perfect wife. Almost too perfect.",
+    dialogue: [
+      { speaker: "Strawberto", text: "You've been glowing lately, sweetheart. I booked us a little getaway — just two berries and the sea." },
+      { speaker: "Strawberrina", text: "(He has no idea. He really has no idea.)" },
+      { speaker: "Strawberto", text: "I even practiced my swimming. For you." },
+      { speaker: "Strawberrina", text: "That's... so sweet. I— excuse me one second. I don't feel so good." },
+    ],
+    next: "pregnancy-test",
   },
 
   // ─────────────────────────────────────────────── Scene 5
   "pregnancy-test": {
     id: "pregnancy-test",
     background: "/bg/bathroom.png",
+    card: { time: "Minutes Later", place: "The Bathroom" },
     sprites: [{ src: SPR.rinaPanicked, name: "Strawberrina", position: "center" }],
     voiceover: "Two lines. Two pink, judgmental lines.",
     dialogue: [
@@ -123,6 +147,7 @@ export const scenes: Record<string, Scene> = {
   "suspicion-night": {
     id: "suspicion-night",
     background: "/bg/bedroom-night.png",
+    card: { time: "Six Months Later" },
     sprites: [{ src: SPR.rinaPregnant, name: "Strawberrina", position: "center" }],
     voiceover:
       "Six months along. He'd been quiet lately. Last week he found a hotel receipt and said nothing. The silence was the loudest thing in the house.",
@@ -142,6 +167,7 @@ export const scenes: Record<string, Scene> = {
   hospital: {
     id: "hospital",
     background: "/bg/hospital.png",
+    card: { time: "Nine Months Later", place: "St. Orchard Hospital", bg: "/bg/hospital.png" },
     sprites: [
       { src: SPR.rinaPregnant, name: "Strawberrina", position: "right" },
       { src: SPR.bertoNeutral, name: "Strawberto", position: "left" },
