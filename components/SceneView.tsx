@@ -9,6 +9,7 @@ import ChoiceMenu from "./ChoiceMenu";
 import Voiceover from "./Voiceover";
 import TransitionCard from "./TransitionCard";
 import { dramaSwell } from "@/lib/sfx";
+import { playClip, clipPath, stopVoice } from "@/lib/audio";
 
 const POS: Record<string, string> = {
   left: "left-[2%] sm:left-[8%]",
@@ -49,6 +50,44 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
   useEffect(() => {
     if (isReveal && !showCard) dramaSwell();
   }, [isReveal, scene.id, showCard]);
+
+  // ── voice playback ──────────────────────────────
+  const lineRef = useRef(lineIndex);
+  useEffect(() => {
+    lineRef.current = lineIndex;
+  }, [lineIndex]);
+
+  // narrate the chapter card while it is shown
+  useEffect(() => {
+    if (showCard && scene.card) playClip(clipPath.card(scene.id));
+  }, [showCard, scene.id, scene.card]);
+
+  // on scene start (after any card): voiceover, then the first line
+  useEffect(() => {
+    if (showCard) return;
+    let cancelled = false;
+    (async () => {
+      if (scene.voiceover) {
+        await playClip(clipPath.vo(scene.id));
+        if (cancelled) return;
+      }
+      if (lineRef.current === 0) playClip(clipPath.line(scene.id, 0));
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene.id, showCard]);
+
+  // voice each subsequent line as it appears
+  useEffect(() => {
+    if (showCard) return;
+    if (lineIndex > 0) playClip(clipPath.line(scene.id, lineIndex));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lineIndex]);
+
+  // stop audio when the scene view unmounts (replay / back to title)
+  useEffect(() => () => stopVoice(), []);
 
   const handleStageClick = useCallback(() => {
     if (showChoices) return;
