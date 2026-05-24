@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useReducer, useState } from "react";
+import { useCallback, useReducer, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Choice } from "@/lib/types";
 import { reducer, initialState } from "@/lib/reducer";
@@ -12,6 +12,7 @@ import { setMusicPlaying, setMusicVolume } from "@/lib/music";
 import TitleScreen from "./TitleScreen";
 import SceneView from "./SceneView";
 import EndingScreen from "./EndingScreen";
+import Preloader from "./Preloader";
 
 export default function Game() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -20,6 +21,8 @@ export default function Game() {
   const [musicOff, setMusicOff] = useState(false);
   const [musicVol, setMusicVol] = useState(0.14);
   const [flash, setFlash] = useState<Choice["tone"] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const preloadedRef = useRef(false);
 
   const scene = scenes[state.sceneId];
 
@@ -48,12 +51,22 @@ export default function Game() {
     safe: "bg-sky-400/20",
   };
 
-  const start = useCallback(() => {
+  const enterGame = useCallback(() => {
+    preloadedRef.current = true;
+    setLoading(false);
     setRecap(false);
     dispatch({ type: "START" });
-    // begin the background music on this user gesture (respect current toggles)
+  }, []);
+
+  // Begin → start music on this user gesture, then preload everything (first time only)
+  const start = useCallback(() => {
     setMusicPlaying(!muted && !musicOff);
-  }, [muted, musicOff]);
+    if (preloadedRef.current) {
+      enterGame();
+    } else {
+      setLoading(true);
+    }
+  }, [muted, musicOff, enterGame]);
 
   const replay = useCallback(() => {
     setRecap(false);
@@ -87,7 +100,9 @@ export default function Game() {
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden bg-black">
       <div className="mx-auto h-full w-full max-w-[1600px]">
-        {state.phase === "title" && <TitleScreen onStart={start} />}
+        {state.phase === "title" && !loading && <TitleScreen onStart={start} />}
+
+        {loading && <Preloader onDone={enterGame} />}
 
         {state.phase !== "title" && scene && (
           <SceneView
