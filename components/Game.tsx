@@ -7,6 +7,7 @@ import { scenes } from "@/lib/scenes";
 import { sceneLineCount } from "@/lib/lines";
 import { setVoiceMuted, stopVoice } from "@/lib/audio";
 import { setMuted as setSfxMuted } from "@/lib/sfx";
+import { setMusicPlaying, setMusicVolume } from "@/lib/music";
 import TitleScreen from "./TitleScreen";
 import SceneView from "./SceneView";
 import EndingScreen from "./EndingScreen";
@@ -15,6 +16,8 @@ export default function Game() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [recap, setRecap] = useState(false);
   const [muted, setMuted] = useState(false);
+  const [musicOff, setMusicOff] = useState(false);
+  const [musicVol, setMusicVol] = useState(0.14);
 
   const scene = scenes[state.sceneId];
 
@@ -35,7 +38,9 @@ export default function Game() {
   const start = useCallback(() => {
     setRecap(false);
     dispatch({ type: "START" });
-  }, []);
+    // begin the background music on this user gesture (respect current toggles)
+    setMusicPlaying(!muted && !musicOff);
+  }, [muted, musicOff]);
 
   const replay = useCallback(() => {
     setRecap(false);
@@ -48,8 +53,22 @@ export default function Game() {
       const next = !m;
       setVoiceMuted(next);
       setSfxMuted(next);
+      setMusicPlaying(!next && !musicOff); // master mute also silences music
       return next;
     });
+  }, [musicOff]);
+
+  const toggleMusic = useCallback(() => {
+    setMusicOff((off) => {
+      const next = !off;
+      setMusicPlaying(!next && !muted);
+      return next;
+    });
+  }, [muted]);
+
+  const changeVolume = useCallback((v: number) => {
+    setMusicVol(v);
+    setMusicVolume(v);
   }, []);
 
   return (
@@ -74,15 +93,40 @@ export default function Game() {
           />
         )}
 
-        {/* sound toggle */}
+        {/* sound + music controls */}
         {state.phase !== "title" && (
-          <button
-            onClick={toggleMute}
-            aria-label={muted ? "Unmute" : "Mute"}
-            className="absolute right-3 top-3 z-[60] rounded-full border border-gold/30 bg-black/60 px-3 py-2 text-lg backdrop-blur-md transition-colors hover:bg-black/80 sm:right-5 sm:top-5"
-          >
-            {muted ? "🔇" : "🔊"}
-          </button>
+          <div className="absolute right-3 top-3 z-[60] flex items-center gap-2 sm:right-5 sm:top-5">
+            <div className="flex items-center gap-2 rounded-full border border-gold/30 bg-black/60 px-3 py-2 backdrop-blur-md">
+              <button
+                onClick={toggleMusic}
+                aria-label={musicOff ? "Music off" : "Music on"}
+                title={musicOff ? "Music off" : "Music on"}
+                className={`text-lg leading-none transition-opacity hover:opacity-100 ${musicOff ? "opacity-40" : ""}`}
+              >
+                🎵
+              </button>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.02}
+                value={musicVol}
+                onChange={(e) => changeVolume(Number(e.target.value))}
+                aria-label="Music volume"
+                title="Music volume"
+                style={{ accentColor: "#e8b04b" }}
+                className="h-1 w-16 cursor-pointer sm:w-24"
+              />
+            </div>
+            <button
+              onClick={toggleMute}
+              aria-label={muted ? "Unmute" : "Mute"}
+              title={muted ? "Unmute" : "Mute"}
+              className="rounded-full border border-gold/30 bg-black/60 px-3 py-2 text-lg backdrop-blur-md transition-colors hover:bg-black/80"
+            >
+              {muted ? "🔇" : "🔊"}
+            </button>
+          </div>
         )}
       </div>
     </main>
