@@ -11,9 +11,10 @@ export const initialState: GameState = {
   history: [],
 };
 
-/** suspicion >= 3 → exposed; otherwise she gets away with it */
+/** suspicion >= 3 → exposed; otherwise she gets away with it.
+ *  Routes through a baby-reveal scene before the ending reactions. */
 export function resolveEnding(suspicion: number): string {
-  return suspicion >= 3 ? "ending-exposed" : "ending-perfect";
+  return suspicion >= 3 ? "reveal-exposed" : "reveal-perfect";
 }
 
 function enterScene(state: GameState, sceneId: string): GameState {

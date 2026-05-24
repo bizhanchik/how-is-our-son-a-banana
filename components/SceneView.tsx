@@ -83,10 +83,10 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
   const onComplete = useCallback(() => setLineComplete(true), []);
   const dismissCard = useCallback(() => setShowCard(false), []);
 
-  // shake on the iconic banana reveal line
+  // shake on any banana-reveal line (reveal scene + the iconic ending line)
   const shaking = useMemo(
-    () => scene.endingKind === "exposed" && line?.text.includes("banana"),
-    [scene.endingKind, line],
+    () => scene.cinematic === "reveal" && !!line?.text.toLowerCase().includes("banana"),
+    [scene.cinematic, line],
   );
 
   return (

@@ -184,6 +184,32 @@ export const scenes: Record<string, Scene> = {
     // next is resolved at runtime by the reducer based on suspicion
   },
 
+  // ─────────────────────────────────────────────── Baby reveal (good)
+  "reveal-perfect": {
+    id: "reveal-perfect",
+    background: "/bg/reveal-perfect.png",
+    cinematic: "reveal",
+    letterbox: true,
+    dialogue: [
+      { speaker: "Doctor", text: "Congratulations, Mr. and Mrs. Berry! It's a healthy baby... strawberry! Ten little seeds, red as can be." },
+      { speaker: "Doctor", text: "A textbook berry. You must be so relieved." },
+    ],
+    next: "ending-perfect",
+  },
+
+  // ─────────────────────────────────────────────── Baby reveal (bad)
+  "reveal-exposed": {
+    id: "reveal-exposed",
+    background: "/bg/reveal-exposed.png",
+    cinematic: "reveal",
+    letterbox: true,
+    dialogue: [
+      { speaker: "Doctor", text: "Congratulations! It's a... uhhh... ohhh." },
+      { speaker: "Doctor", text: "It's... it's a banana? That's — huh. That's a first." },
+    ],
+    next: "ending-exposed",
+  },
+
   // ─────────────────────────────────────────────── Ending A
   "ending-perfect": {
     id: "ending-perfect",
@@ -193,7 +219,6 @@ export const scenes: Record<string, Scene> = {
     letterbox: true,
     voiceover: "And just like that, the universe decided to let one slide.",
     dialogue: [
-      { speaker: "Doctor", text: "Congratulations, Mr. and Mrs. Berry. It's a healthy baby... strawberry!" },
       { speaker: "Strawberto", text: "(weeping) She has your seeds. She has your beautiful seeds." },
       { speaker: "Strawberrina", text: "She has someone's." },
       { speaker: "Narrator", text: "Through the window, a familiar silhouette. A slow, knowing nod. Bananito tips an invisible hat — and is gone." },
@@ -211,7 +236,6 @@ export const scenes: Record<string, Scene> = {
     letterbox: true,
     sprites: [{ src: SPR.bertoDevastated, name: "Strawberto", position: "center" }],
     dialogue: [
-      { speaker: "Doctor", text: "Congratulations! It's a... uh... it's a banana?" },
       { speaker: "Narrator", text: "Strawberto looked at the baby. Then at his wife. The telenovela strings began to swell." },
       { speaker: "Strawberto", text: "I am strawberry. You are strawberry. How is our son a banana?!" },
       { speaker: "Strawberrina", text: "...he tans easily?" },
