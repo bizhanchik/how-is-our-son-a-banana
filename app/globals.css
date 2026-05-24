@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --wine: #1a0507;
+  --wine-2: #2a0a0e;
+  --crimson: #c2143b;
+  --strawberry: #e63950;
+  --banana: #f4c430;
+  --gold: #e8b04b;
+  --cream: #f6e9d8;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-wine: var(--wine);
+  --color-wine-2: var(--wine-2);
+  --color-crimson: var(--crimson);
+  --color-strawberry: var(--strawberry);
+  --color-banana: var(--banana);
+  --color-gold: var(--gold);
+  --color-cream: var(--cream);
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-dmsans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  background: var(--wine);
+  color: var(--cream);
+  font-family: var(--font-dmsans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
+
+/* ── Film grain overlay ──────────────────────────────── */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain-shift 0.6s steps(2) infinite;
+}
+
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(-3%, 2%); }
+  100% { transform: translate(2%, -2%); }
+}
+
+/* ── Vignette ────────────────────────────────────────── */
+.vignette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 45%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* ── Letterbox cinematic bars ────────────────────────── */
+.letterbox-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 9%;
+  background: #000;
+  z-index: 50;
+}
+.letterbox-bar.top { top: 0; }
+.letterbox-bar.bottom { bottom: 0; }
+
+/* utility: wide editorial tracking on UI labels */
+.label-track {
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+/* blinking advance indicator */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+.pulse-soft { animation: pulse-soft 1.3s ease-in-out infinite; }
+
+/* hide scrollbars on the game stage */
+::-webkit-scrollbar { display: none; }
