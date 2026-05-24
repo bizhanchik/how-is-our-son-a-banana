@@ -1,23 +1,55 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { click } from "@/lib/sfx";
+import { recordEnding, getEndingsFound, TOTAL_ENDINGS } from "@/lib/progress";
 
-interface Props {
-  kind: "perfect" | "exposed";
+type Kind = "perfect" | "exposed" | "closecall";
+
+const ENDINGS: Record<Kind, { emoji: string; label: string; title: string; color: string; card: string; verdict: string }> = {
+  perfect: {
+    emoji: "🍓",
+    label: "Ending A",
+    title: "The Perfect Crime",
+    color: "text-strawberry",
+    card: "She got away with it.",
+    verdict: "Flawless. You covered every track. The seeds never lie — but you made them.",
+  },
+  closecall: {
+    emoji: "🍓",
+    label: "Ending C",
+    title: "Close Call",
+    color: "text-gold",
+    card: "She got away with it. For now.",
+    verdict: "Cutting it fine. The baby came out red — but he's counting every late night. Tidy up next time.",
+  },
+  exposed: {
+    emoji: "🍌",
+    label: "Ending B",
+    title: "Exposed",
+    color: "text-banana",
+    card: "Strawberrina lost everything.",
+    verdict: "Too greedy. You left the evidence, and the evidence was yellow.",
+  },
+};
+
+export default function EndingScreen({
+  kind,
+  suspicion,
+  onReplay,
+}: {
+  kind: Kind;
   suspicion: number;
   onReplay: () => void;
-}
+}) {
+  const e = ENDINGS[kind];
+  const [found, setFound] = useState(0);
 
-export default function EndingScreen({ kind, suspicion, onReplay }: Props) {
-  const perfect = kind === "perfect";
-  const title = perfect ? "The Perfect Crime" : "Exposed";
-  const card = perfect ? "She got away with it." : "Strawberrina lost everything.";
-  const verdict = perfect
-    ? suspicion <= 0
-      ? "Flawless. You covered every track. The seeds never lie — but you made them."
-      : "Cutting it close, but the baby came out red. Luck favors the guilty."
-    : "Too greedy. You left the evidence, and the evidence was yellow.";
+  useEffect(() => {
+    recordEnding(kind);
+    setFound(getEndingsFound().length);
+  }, [kind]);
 
   return (
     <motion.div
@@ -32,7 +64,7 @@ export default function EndingScreen({ kind, suspicion, onReplay }: Props) {
         transition={{ delay: 0.3, type: "spring", stiffness: 120 }}
         className="text-6xl sm:text-7xl"
       >
-        {perfect ? "🍓" : "🍌"}
+        {e.emoji}
       </motion.span>
 
       <motion.p
@@ -41,15 +73,15 @@ export default function EndingScreen({ kind, suspicion, onReplay }: Props) {
         transition={{ delay: 0.5 }}
         className="label-track mt-6 text-xs text-gold sm:text-sm"
       >
-        Ending {perfect ? "A" : "B"}
+        {e.label}
       </motion.p>
       <motion.h2
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className={`font-display text-5xl font-black sm:text-7xl ${perfect ? "text-strawberry" : "text-banana"}`}
+        className={`font-display text-5xl font-black sm:text-7xl ${e.color}`}
       >
-        {title}
+        {e.title}
       </motion.h2>
 
       <motion.p
@@ -58,7 +90,7 @@ export default function EndingScreen({ kind, suspicion, onReplay }: Props) {
         transition={{ delay: 1 }}
         className="mt-4 font-display text-xl italic text-cream sm:text-2xl"
       >
-        “{card}”
+        “{e.card}”
       </motion.p>
 
       <motion.div
@@ -70,7 +102,11 @@ export default function EndingScreen({ kind, suspicion, onReplay }: Props) {
         <p className="text-sm text-cream/70">
           Final suspicion: <span className="font-bold text-gold">{suspicion}</span>
         </p>
-        <p className="mt-1 max-w-md text-sm text-cream/60">{verdict}</p>
+        <p className="mt-1 max-w-md text-sm text-cream/60">{e.verdict}</p>
+        <p className="mt-3 border-t border-white/10 pt-3 text-xs text-cream/70">
+          Endings discovered: <span className="font-bold text-gold">{found}</span> / {TOTAL_ENDINGS}
+          {found < TOTAL_ENDINGS && " — play again to find the rest"}
+        </p>
       </motion.div>
 
       <motion.button

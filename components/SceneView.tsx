@@ -7,6 +7,7 @@ import type { Scene, Choice } from "@/lib/types";
 import DialogueBox, { type DialogueHandle } from "./DialogueBox";
 import ChoiceMenu from "./ChoiceMenu";
 import TransitionCard from "./TransitionCard";
+import DeleteEvidenceGame from "./DeleteEvidenceGame";
 import { sceneLines } from "@/lib/lines";
 import { dramaSwell } from "@/lib/sfx";
 import { playClip, clipPath, stopVoice } from "@/lib/audio";
@@ -34,7 +35,8 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
   const isLastLine = lineIndex >= lines.length - 1;
   const hasChoices = !!scene.choices?.length;
   const showChoices = isLastLine && hasChoices && lineComplete && !showCard;
-  const showAdvance = lineComplete && !showChoices && !showCard;
+  const showMinigame = isLastLine && !!scene.minigame && lineComplete && !showCard;
+  const showAdvance = lineComplete && !showChoices && !showMinigame && !showCard;
 
   // show the chapter card on scene entry
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
   useEffect(() => () => stopVoice(), []);
 
   const handleStageClick = useCallback(() => {
-    if (showChoices) return;
+    if (showChoices || showMinigame) return;
     const box = boxRef.current;
     if (box && !box.isDone()) {
       box.complete();
@@ -78,10 +80,19 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
       return;
     }
     onAdvance();
-  }, [showChoices, onAdvance]);
+  }, [showChoices, showMinigame, onAdvance]);
 
   const onComplete = useCallback(() => setLineComplete(true), []);
   const dismissCard = useCallback(() => setShowCard(false), []);
+
+  const finishMinigame = useCallback(
+    (delta: number) => {
+      const mg = scene.minigame;
+      if (!mg) return;
+      onChoose({ text: "", tone: delta <= 0 ? "safe" : "risky", suspicionDelta: delta, next: mg.next });
+    },
+    [scene.minigame, onChoose],
+  );
 
   // shake on any banana-reveal line (reveal scene + the iconic ending line)
   const shaking = useMemo(
@@ -169,6 +180,11 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
           )}
         </div>
       )}
+
+      {/* timed mini-game */}
+      <AnimatePresence>
+        {showMinigame && <DeleteEvidenceGame key={`mg-${scene.id}`} onFinish={finishMinigame} />}
+      </AnimatePresence>
 
       {/* chapter / transition card */}
       <AnimatePresence>

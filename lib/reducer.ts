@@ -11,10 +11,12 @@ export const initialState: GameState = {
   history: [],
 };
 
-/** suspicion >= 3 → exposed; otherwise she gets away with it.
- *  Routes through a baby-reveal scene before the ending reactions. */
+/** Routes through a baby-reveal scene before the ending reactions.
+ *  >= 3 → exposed (banana) · 1-2 → close call (lucky red, but he's watching) · <= 0 → perfect. */
 export function resolveEnding(suspicion: number): string {
-  return suspicion >= 3 ? "reveal-exposed" : "reveal-perfect";
+  if (suspicion >= 3) return "reveal-exposed";
+  if (suspicion >= 1) return "reveal-closecall";
+  return "reveal-perfect";
 }
 
 function enterScene(state: GameState, sceneId: string): GameState {
@@ -58,8 +60,9 @@ export function reducer(state: GameState, action: GameAction): GameState {
         return { ...state, lineIndex: state.lineIndex + 1 };
       }
 
-      // last line reached — if there are choices, ChoiceMenu takes over (no-op here)
+      // last line reached — choices or a mini-game take over (handled in the view)
       if (scene.choices && scene.choices.length > 0) return state;
+      if (scene.minigame) return state;
 
       // branch point: compute ending from accumulated suspicion
       if (scene.isBranchPoint) {

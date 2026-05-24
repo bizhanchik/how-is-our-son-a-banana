@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useReducer, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { Choice } from "@/lib/types";
 import { reducer, initialState } from "@/lib/reducer";
 import { scenes } from "@/lib/scenes";
@@ -18,6 +19,7 @@ export default function Game() {
   const [muted, setMuted] = useState(false);
   const [musicOff, setMusicOff] = useState(false);
   const [musicVol, setMusicVol] = useState(0.14);
+  const [flash, setFlash] = useState<Choice["tone"] | null>(null);
 
   const scene = scenes[state.sceneId];
 
@@ -33,7 +35,18 @@ export default function Game() {
     dispatch({ type: "ADVANCE" });
   }, [state.sceneId, state.lineIndex]);
 
-  const handleChoose = useCallback((c: Choice) => dispatch({ type: "CHOOSE", choice: c }), []);
+  const handleChoose = useCallback((c: Choice) => {
+    // brief tone-colored feedback flash (no number revealed)
+    setFlash(c.tone);
+    window.setTimeout(() => setFlash(null), 480);
+    dispatch({ type: "CHOOSE", choice: c });
+  }, []);
+
+  const FLASH_COLOR: Record<Choice["tone"], string> = {
+    risky: "bg-strawberry/25",
+    bold: "bg-gold/25",
+    safe: "bg-sky-400/20",
+  };
 
   const start = useCallback(() => {
     setRecap(false);
@@ -92,6 +105,19 @@ export default function Game() {
             onReplay={replay}
           />
         )}
+
+        {/* choice feedback flash */}
+        <AnimatePresence>
+          {flash && (
+            <motion.div
+              key={flash + Date.now()}
+              initial={{ opacity: 0.7 }}
+              animate={{ opacity: 0 }}
+              transition={{ duration: 0.48 }}
+              className={`pointer-events-none absolute inset-0 z-[55] ${FLASH_COLOR[flash]}`}
+            />
+          )}
+        </AnimatePresence>
 
         {/* sound + music controls */}
         {state.phase !== "title" && (

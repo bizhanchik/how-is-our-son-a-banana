@@ -98,12 +98,9 @@ export const scenes: Record<string, Scene> = {
       { speaker: "Bananito", text: "Get dressed. Your husband will wonder." },
       { speaker: "Bananito", text: "This never happened, Strawberrina. Understood?" },
       { speaker: "Strawberrina", text: "It meant nothing. Right?" },
-      { speaker: "Bananito", text: "Less than nothing. Now delete my number. Or don't. I like a woman who keeps souvenirs." },
+      { speaker: "Bananito", text: "Now delete every text before your husband gets home. Quickly. He's already parking." },
     ],
-    choices: [
-      { text: "📱 Delete every message", tone: "safe", suspicionDelta: -2, next: "home-aftermath" },
-      { text: "💾 Keep them — \"it doesn't mean anything\"", tone: "risky", suspicionDelta: 2, flag: "evidence_kept", next: "home-aftermath" },
-    ],
+    minigame: { kind: "delete-evidence", next: "home-aftermath" },
   },
 
   // ─────────────────────────────────────────────── Scene 4.5 (bridge)
@@ -240,6 +237,36 @@ export const scenes: Record<string, Scene> = {
       { speaker: "Strawberto", text: "I am strawberry. You are strawberry. How is our son a banana?!" },
       { speaker: "Strawberrina", text: "...he tans easily?" },
       { speaker: "Narrator", text: "Strawberto walked out without his coat. Strawberrina was left holding everything she had left. Which was a banana." },
+    ],
+    next: "__ending__",
+  },
+
+  // ─────────────────────────────────────────────── Baby reveal (close call)
+  "reveal-closecall": {
+    id: "reveal-closecall",
+    background: "/bg/reveal-perfect.png",
+    cinematic: "reveal",
+    letterbox: true,
+    dialogue: [
+      { speaker: "Doctor", text: "Congratulations — it's a healthy baby strawberry! Red as can be... mostly." },
+      { speaker: "Doctor", text: "Funny. For a second I'd have sworn I saw a hint of yellow. Trick of the light, surely." },
+    ],
+    next: "ending-closecall",
+  },
+
+  // ─────────────────────────────────────────────── Ending C (close call)
+  "ending-closecall": {
+    id: "ending-closecall",
+    background: "/bg/ending-perfect.png",
+    isEnding: true,
+    endingKind: "closecall",
+    letterbox: true,
+    sprites: [{ src: SPR.bertoSuspicious, name: "Strawberto", position: "center" }],
+    voiceover: "She got the red she prayed for. But red doesn't erase a paper trail.",
+    dialogue: [
+      { speaker: "Strawberto", text: "She's perfect. The hotel receipt, the late nights, the new perfume... but she's perfect." },
+      { speaker: "Strawberrina", text: "(He's counting. He's always counting now.)" },
+      { speaker: "Narrator", text: "Strawberrina got away with it. Strawberto never raised his voice again — about anything. The house just got very, very quiet." },
     ],
     next: "__ending__",
   },

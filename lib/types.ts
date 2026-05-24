@@ -37,13 +37,15 @@ export interface Scene {
   voiceover?: string;
   dialogue: DialogueLine[];
   choices?: Choice[];
+  /** interactive mini-game shown after the dialogue instead of choices */
+  minigame?: { kind: "delete-evidence"; next: string };
   /** if no choices, where to go after the last dialogue line */
   next?: string;
   /** the delivery-room scene that branches into an ending based on suspicion */
   isBranchPoint?: boolean;
   /** ending screens */
   isEnding?: boolean;
-  endingKind?: "perfect" | "exposed";
+  endingKind?: "perfect" | "exposed" | "closecall";
   /** cinematic flags consumed by SceneView for extra motion */
   cinematic?: "montage" | "reveal";
   letterbox?: boolean;
