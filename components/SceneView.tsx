@@ -106,24 +106,37 @@ export default function SceneView({ scene, lineIndex, onAdvance, onChoose }: Pro
       animate={shaking ? { x: [0, -8, 8, -6, 6, 0] } : { x: 0 }}
       transition={{ duration: 0.45 }}
     >
-      {/* background crossfade */}
+      {/* background crossfade (video if the scene has one, else still image) */}
       <AnimatePresence mode="sync">
         <motion.div
-          key={scene.background}
+          key={scene.video || scene.background}
           initial={{ opacity: 0, scale: 1.06 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
           className="absolute inset-0"
         >
-          <Image src={scene.background} alt="" fill priority sizes="100vw" className="object-cover" />
+          {scene.video ? (
+            <video
+              src={scene.video}
+              poster={scene.background}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <Image src={scene.background} alt="" fill priority sizes="100vw" className="object-cover" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
         </motion.div>
       </AnimatePresence>
 
-      {/* sprites (revealed after the card) */}
+      {/* sprites (revealed after the card; skipped when a video already shows the cast) */}
       <AnimatePresence>
-        {!showCard &&
+        {!showCard && !scene.video &&
           scene.sprites?.map((s) => (
             <motion.div
               key={`${scene.id}-${s.src}`}

@@ -20,6 +20,7 @@ export const scenes: Record<string, Scene> = {
   morning: {
     id: "morning",
     background: "/bg/kitchen-morning.png",
+    video: "/video/morning.mp4",
     card: { time: "Tuesday Morning", place: "The Berry Residence", bg: "/bg/house-exterior.png" },
     sprites: [
       { src: SPR.bertoNeutral, name: "Strawberto", position: "left" },
@@ -185,6 +186,7 @@ export const scenes: Record<string, Scene> = {
   "reveal-perfect": {
     id: "reveal-perfect",
     background: "/bg/reveal-perfect.png",
+    video: "/video/reveal-perfect.mp4",
     cinematic: "reveal",
     letterbox: true,
     dialogue: [
@@ -198,6 +200,7 @@ export const scenes: Record<string, Scene> = {
   "reveal-exposed": {
     id: "reveal-exposed",
     background: "/bg/reveal-exposed.png",
+    video: "/video/reveal-exposed.mp4",
     cinematic: "reveal",
     letterbox: true,
     dialogue: [
@@ -245,6 +248,7 @@ export const scenes: Record<string, Scene> = {
   "reveal-closecall": {
     id: "reveal-closecall",
     background: "/bg/reveal-perfect.png",
+    video: "/video/reveal-perfect.mp4",
     cinematic: "reveal",
     letterbox: true,
     dialogue: [

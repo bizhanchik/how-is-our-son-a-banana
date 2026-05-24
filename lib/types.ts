@@ -28,7 +28,9 @@ export interface SpriteSlot {
 
 export interface Scene {
   id: string;
-  background: string; // /bg/...
+  background: string; // /bg/... (also used as the video poster / fallback)
+  /** optional looping background video (/video/...) that replaces the still image */
+  video?: string;
   /** chapter / transition card shown on scene entry */
   card?: { time?: string; place?: string; bg?: string };
   /** characters on screen for this scene (rendered behind the dialogue box) */
