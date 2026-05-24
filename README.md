@@ -24,7 +24,6 @@ The suspicion score is hidden during play and only revealed in the ending recap 
 - **Next.js 16** (App Router) + **React 19** + **TypeScript**
 - **Tailwind CSS v4** — hand-built telenovela design system (Playfair Display + DM Sans)
 - **Framer Motion** — scene crossfades, sprite entrances, the banana-reveal screen shake
-- **Web Audio API** — fully procedural SFX (typewriter ticks, choice stings, the reveal swell); no audio files
 - State is a small `useReducer` state machine (`lib/reducer.ts`); all content is data-driven (`lib/scenes.ts`)
 - Deployed on **Vercel**
 
@@ -40,7 +39,6 @@ pnpm dev      # http://localhost:3000
   green screen for clean compositing.
 - **Claude (Anthropic)** co-wrote the screenplay (the true-crime narration, the fruit puns,
   the iconic lines) and built the game engine.
-- No AI runs at play-time — the experience is fully self-contained and free to host.
 
 ## ▸ Credits & influences
 
@@ -48,3 +46,16 @@ pnpm dev      # http://localhost:3000
 - **Joy Ofodu's _How Different Fruits Act_ (2025)** — a parody influence on fruit personification.
 
 This is an affectionate, original parody. All characters and dialogue are fictional.
+- Press the **🔊 / 🔇 button** (top-right corner) to mute or unmute all sound — voices and SFX
+  are silenced together.
+- **Web Audio API** — fully procedural SFX (typewriter ticks, choice stings, the reveal swell)
+- **ElevenLabs TTS** — every dialogue line, voiceover, and chapter card is narrated by a
+  character-matched voice (`lib/audio.ts`). Clips live in `public/audio/` and are generated
+  offline via `scripts/gen-voices.ts` (requires `ELEVENLABS_API_KEY` in `.env.local`).
+  Missing files are silently skipped at runtime.
+To (re-)generate voice clips:
+# add ELEVENLABS_API_KEY=<key> to .env.local first
+npx tsx scripts/gen-voices.ts
+- **ElevenLabs** voices were generated offline for each character (Strawberrina → Lily,
+  Bananito → Eric, Strawberto → Chris, Narrator → George, Doctor → Daniel).
+- No AI runs at play-time — the experience is fully self-contained and free to host.
