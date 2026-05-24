@@ -22,6 +22,7 @@ The suspicion score is hidden during play and only revealed in the ending recap 
 ## ▸ Tech
 
 - **Next.js 16** (App Router) + **React 19** + **TypeScript**
+- **Next.js Metadata API** — `app/page.tsx` exports static `title` and `description` metadata for SEO and social sharing
 - **Tailwind CSS v4** — hand-built telenovela design system (Playfair Display + DM Sans)
 - **Framer Motion** — scene crossfades, sprite entrances, the banana-reveal screen shake
 - **Web Audio API** — fully procedural SFX (typewriter ticks, choice stings, the reveal swell); no audio files
