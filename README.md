@@ -48,3 +48,7 @@ pnpm dev      # http://localhost:3000
 - **Joy Ofodu's _How Different Fruits Act_ (2025)** — a parody influence on fruit personification.
 
 This is an affectionate, original parody. All characters and dialogue are fictional.
+  - 🍌 **Close Call** — a near-miss variant of the perfect crime ending.
+- **Looping background video** — key scenes (`morning`, `reveal-*`) use an HTML `<video>` element
+  (`/video/*.mp4`) instead of a still image; the still image is kept as the poster/fallback.
+  Character sprites are hidden automatically when a video background is active.
