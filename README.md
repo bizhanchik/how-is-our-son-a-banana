@@ -26,6 +26,7 @@ The suspicion score is hidden during play and only revealed in the ending recap 
 - **Framer Motion** — scene crossfades, sprite entrances, the banana-reveal screen shake
 - **Web Audio API** — fully procedural SFX (typewriter ticks, choice stings, the reveal swell); no audio files
 - State is a small `useReducer` state machine (`lib/reducer.ts`); all content is data-driven (`lib/scenes.ts`)
+- **Asset preloader** (`components/Preloader.tsx`) — on first launch all images, videos, audio clips, and music are fetched into the browser cache (6 concurrent workers, 60 s safety cap) so nothing streams in mid-scene. Progress is shown as an animated progress bar with rotating flavour text.
 - Deployed on **Vercel**
 
 ```bash
