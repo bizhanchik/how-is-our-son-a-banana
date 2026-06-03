@@ -24,7 +24,6 @@ The suspicion score is hidden during play and only revealed in the ending recap 
 - **Next.js 16** (App Router) + **React 19** + **TypeScript**
 - **Tailwind CSS v4** — hand-built telenovela design system (Playfair Display + DM Sans)
 - **Framer Motion** — scene crossfades, sprite entrances, the banana-reveal screen shake
-- **Web Audio API** — fully procedural SFX (typewriter ticks, choice stings, the reveal swell); no audio files
 - State is a small `useReducer` state machine (`lib/reducer.ts`); all content is data-driven (`lib/scenes.ts`)
 - Deployed on **Vercel**
 
@@ -48,3 +47,10 @@ pnpm dev      # http://localhost:3000
 - **Joy Ofodu's _How Different Fruits Act_ (2025)** — a parody influence on fruit personification.
 
 This is an affectionate, original parody. All characters and dialogue are fictional.
+- During gameplay, a **looping background music track** plays automatically on the first click.
+  - 🎵 **Music toggle** — mute/unmute the background music independently.
+  - 🎚️ **Volume slider** — adjust music volume in real time.
+  - 🔊 **Master mute** — silences voices, SFX, *and* music at once.
+  - All controls appear in the top-right corner after the title screen.
+- **Web Audio API** — fully procedural SFX (typewriter ticks, choice stings, the reveal swell); no audio files
+- **HTML Audio** — looping background music (`/music/music.mp3`) via `lib/music.ts`; starts on first user gesture, independently toggleable and volume-adjustable
